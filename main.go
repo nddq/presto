@@ -4,9 +4,11 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
+	"os"
+	"strconv"
 	"sync"
 
-	"github.com/nddq/audioRecognition/fingerprint"
+	"github.com/nddq/presto/fingerprint"
 )
 
 type Result struct {
@@ -15,12 +17,35 @@ type Result struct {
 }
 
 func main() {
+	if len(os.Args) < 5 {
+		fmt.Fprintf(os.Stderr, "Missing args\n")
+		os.Exit(1)
+	}
+	audioDirectory := os.Args[1]
+	sampleName := os.Args[2]
+	winSize, err := strconv.Atoi(os.Args[3])
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Not a valid window size\n")
+		os.Exit(1)
+	}
+	hopSize, err := strconv.Atoi(os.Args[4])
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Not a valid hop size\n")
+		os.Exit(1)
+	}
+	var winFunc string
+	if len(os.Args) == 6 {
+		winFunc = os.Args[5]
+	} else {
+		winFunc = ""
+	}
+
 	var wg sync.WaitGroup
 	c := make(chan *Result)
 	fingerprintMap := make(map[string][][]int)
 	var mapMu sync.Mutex
 
-	files, err := ioutil.ReadDir("./audio") // read all audio files in directory
+	files, err := ioutil.ReadDir(audioDirectory) // read all audio files in directory
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -30,27 +55,28 @@ func main() {
 		wg.Add(1)
 		go func() { // Fingerprinting multiple audio file concurrently
 			defer wg.Done()
-			fp := fingerprint.Fingerprint("./audio/" + fn)
+
+			fp := fingerprint.Fingerprint(audioDirectory+fn, winSize, hopSize, winFunc, false)
 			mapMu.Lock()
 			defer mapMu.Unlock()
 			fingerprintMap[fn] = fp
 		}()
 	}
-	wg.Wait()
+	wg.Wait() // wait for all fingerprinting process to complete
 	fmt.Printf("Done fingerprinting all audio files. Moving to compare\n")
-	sampleFP := fingerprint.Fingerprint("sample1Shorten.wav") // fingerprinting input sample
+	sampleFP := fingerprint.Fingerprint(sampleName, winSize, hopSize, winFunc, false) // fingerprinting input sample
 	for k, v := range fingerprintMap {
 		filename := k
 		fp := v
 		wg.Add(1)
 		go func() {
 			defer wg.Done() // find matches from audio files concurrently
-			matchRate := fingerprint.GetHighestMatchRate("sample1Shorten.wav", sampleFP, filename, fp)
+			matchRate := fingerprint.GetHighestMatchRate(sampleName, sampleFP, filename, fp)
 			fmt.Printf("%s : %v\n", filename, matchRate)
 			c <- &Result{filename: filename, highestMatchRate: matchRate}
 		}()
 	}
-	go func() {
+	go func() { // wait for all comparison to finished
 		wg.Wait()
 		close(c)
 	}()

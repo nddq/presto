@@ -1,4 +1,4 @@
-module github.com/nddq/audioRecognition
+module github.com/nddq/presto
 
 go 1.16
 
