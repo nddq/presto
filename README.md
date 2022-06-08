@@ -1,4 +1,4 @@
-# Presto - Audio fingerprinting using Go
+# Presto - Audio fingerprinting and recognition using Go
 <img align="left" width="290px" src=gopher.svg>
 
 - This project aims to recognize song tracks from audio snippets through audio fingerprinting.
