@@ -7,6 +7,6 @@
 - Experiment digital signal processing using Go.
 
 [godoc-img]: http://img.shields.io/badge/godoc-reference-blue.svg
-[godoc]: https://godoc.org/github.com/phuslu/fasttime
-[goreport-img]: https://goreportcard.com/badge/github.com/phuslu/fasttime
-[goreport]: https://goreportcard.com/report/github.com/phuslu/fasttime
+[godoc]: https://godoc.org/github.com/nddq/presto
+[goreport-img]: https://goreportcard.com/badge/github.com/nddq/presto
+[goreport]: https://goreportcard.com/report/github.com/nddq/presto
