@@ -1,0 +1,14 @@
+.git
+.gitignore
+.github
+.claude
+*.prfp
+*.wav
+audio/
+testSamples/
+deploy/
+README.md
+CLAUDE.md
+gopher.svg
+Dockerfile
+.dockerignore

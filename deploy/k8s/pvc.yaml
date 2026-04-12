@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: presto-library
+  labels:
+    app.kubernetes.io/name: presto
+spec:
+  # ReadWriteMany so multiple replicas can mount the same library file.
+  # If your cluster only supports ReadWriteOnce, drop replicas to 1 in
+  # the Deployment below.
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 1Gi

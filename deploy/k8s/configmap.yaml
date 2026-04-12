@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: presto-config
+  labels:
+    app.kubernetes.io/name: presto
+data:
+  PRESTO_LISTEN_ADDR: ":8080"
+  PRESTO_STORE_PATH: "/var/lib/presto/library.prfp"
+  PRESTO_MAX_UPLOAD_BYTES: "10485760"

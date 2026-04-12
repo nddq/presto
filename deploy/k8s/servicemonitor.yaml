@@ -1,0 +1,20 @@
+# Apply this manifest only if you are running the Prometheus Operator
+# (kube-prometheus-stack). It configures Prometheus to scrape /metrics
+# directly rather than relying on the pod annotations in deployment.yaml.
+#
+# kubectl apply -f servicemonitor.yaml
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: presto
+  labels:
+    app.kubernetes.io/name: presto
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: presto
+  endpoints:
+    - port: http
+      path: /metrics
+      interval: 30s
+      scrapeTimeout: 10s
